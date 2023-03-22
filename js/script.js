@@ -26,7 +26,7 @@ let game={
  
 myTimer=setInterval(endOfTurnCalc,200);//0.2 секунды
 let winCondition = 200;//Победа. Конец игры
-
+let copperMineBasePriceCoppers = 10;
 let silverMineBasePriceCoppers = 100;
 let goldMineBasePriceSilvers = 100;
 
@@ -82,13 +82,21 @@ function winGame() {
     }
 
   function upgCopperMine() {
+
+    if (game.coppersUpgLevel===0){
+        if (game.coppers>=copperMineBasePriceCoppers){
+          game.coppers = game.coppers-copperMineBasePriceCoppers;
+          game.coppersUpgLevel = 1;
+          updateUI();
+        }
+      }else{
       if (game.coppers >= coppersUpgCost()) {
         game.coppers = game.coppers-coppersUpgCost();
         game.coppersUpgLevel = game.coppersUpgLevel + 1;
         updateUI();
       }
     }
-
+}
     function upgSilverMine() {
       if (game.silversUpgLevel===0){
         if (game.coppers>=silverMineBasePriceCoppers){
@@ -160,30 +168,31 @@ function sellSilver() {
    	    document.getElementById("bonusScores").textContent = game.bonusScores;
    	    document.getElementById("spnCoppersValue").textContent   = game.coppers;
         if (game.coppersUpgLevel===0) {
-          document.getElementById("btnUpgCopperMine").innerHTML  = "Построить медную шахту, ";
-        document.getElementById("btnUpgCopperMine").innerHTML += silverMineBasePriceCoppers.toString();
-        document.getElementById("btnUpgCopperMine").innerHTML += " медных монет";
+          document.getElementById("btnUpgCopperMine").textContent  = "Построить медную шахту, ";
+        document.getElementById("btnUpgCopperMine").textContent += copperMineBasePriceCoppers.toString();
+        document.getElementById("btnUpgCopperMine").textContent += " медных монет";
         }else {
         document.getElementById("btnUpgCopperMine").textContent  = "Улучшить медную шахту, ";
         document.getElementById("btnUpgCopperMine").textContent += coppersUpgCost().toString();
-        document.getElementById("btnUpgCopperMine").textContent += " медных монет";}
-        document.getElementById("spnCoppersRate").textContent    = game.copperGrowth*game.coppersUpgLevel;
+        document.getElementById("btnUpgCopperMine").textContent += " медных монет";
+      }
+        document.getElementById("spnCoppersRate").textContent    = game.copperGrowth*game.coppersUpgLevel*game.bonusScores;
 
         document.getElementById("spnSilversValue").textContent   = game.silvers;
         if (game.silversUpgLevel===0) {
-        document.getElementById("btnUpgSilverMine").innerHTML  = "Построить серебряную шахту, ";
-        document.getElementById("btnUpgSilverMine").innerHTML += silverMineBasePriceCoppers.toString();
-        document.getElementById("btnUpgSilverMine").innerHTML += " медных монет";
+        document.getElementById("btnUpgSilverMine").textContent  = "Построить серебряную шахту, ";
+        document.getElementById("btnUpgSilverMine").textContent += silverMineBasePriceCoppers.toString();
+        document.getElementById("btnUpgSilverMine").textContent += " медных монет";
       } else {
-        document.getElementById("btnUpgSilverMine").innerHTML  = "Улучшить серебряную шахту, ";
-        document.getElementById("btnUpgSilverMine").innerHTML += silversUpgCost().toString();
-        document.getElementById("btnUpgSilverMine").innerHTML += " серебряных монет";
+        document.getElementById("btnUpgSilverMine").textContent  = "Улучшить серебряную шахту, ";
+        document.getElementById("btnUpgSilverMine").textContent += silversUpgCost().toString();
+        document.getElementById("btnUpgSilverMine").textContent += " серебряных монет";
       }
-      document.getElementById("spnSilversRate").innerHTML    = game.silverGrowth*game.silversUpgLevel;
+      document.getElementById("spnSilversRate").textContent    = game.silverGrowth*game.silversUpgLevel*game.bonusScores;
 
       document.getElementById("spnGoldsValue").textContent   = game.golds;
       if (game.goldsUpgLevel===0) {
-        document.getElementById("btnUpgGoldMine").innerHTML  = "Построить золотую шахту, ";
+        document.getElementById("btnUpgGoldMine").textContent  = "Построить золотую шахту, ";
         document.getElementById("btnUpgGoldMine").innerHTML += goldMineBasePriceSilvers.toString();
         document.getElementById("btnUpgGoldMine").innerHTML += " серебряных монет";
       } else {
@@ -191,7 +200,7 @@ function sellSilver() {
         document.getElementById("btnUpgGoldMine").innerHTML += goldsUpgCost().toString();
         document.getElementById("btnUpgGoldMine").innerHTML += " золотых монет";
       }
-      document.getElementById("spnGoldsRate").innerHTML    = game.goldGrowth*game.goldsUpgLevel;
+      document.getElementById("spnGoldsRate").innerHTML    = game.goldGrowth*game.goldsUpgLevel*game.bonusScores;
 
    } 
 
