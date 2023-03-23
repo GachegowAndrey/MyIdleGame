@@ -30,6 +30,9 @@ let copperMineBasePriceCoppers = 10;
 let silverMineBasePriceCoppers = 100;
 let goldMineBasePriceSilvers = 100;
 
+let countdown = 30;
+let showExport = 0;
+
 
 //добываем монеты
    function endOfTurnCalc() {
@@ -202,16 +205,48 @@ function sellSilver() {
       }
       document.getElementById("spnGoldsRate").innerHTML    = game.goldGrowth*game.goldsUpgLevel*game.bonusScores;
 
+
+      if (showExport===1){
+        document.getElementById("divLblExport").style.display = "block";
+      } else {
+        document.getElementById("divLblExport").style.display = "none";
+      }
+
    } 
 
-   
+  //экспорт игры между браузерами 
+function exportGame() {
+      exportTimer = setInterval(exportCountdown, 1000);
+      document.getElementById("divLblExport").innerHTML = btoa(JSON.stringify(game));
+      showExport = 1;
+      updateUI();
+    }
+    
+    function exportCountdown() {
+      if (countdown > 0) {
+        countdown = countdown - 1;
+      } else {
+        clearTimeout(exportTimer);
+        countdown = 30;
+        showExport = 0;
+        updateUI();
+      }
+    }
+    //импорт игры между браузерами
+   function importGame() {
+      let importString = prompt('Введите длинную строку экспорта');
+      gameTemp = JSON.parse(atob(importString));
+      for (var propertyName in gameTemp) { game[propertyName] = gameTemp[propertyName]; }
+      updateUI();
+    }
   //сохранить игру  
 function saveGame(){
 	localStorage.setItem('gameTutorial',JSON.string(game));
 }
 //загружаем сохраненную игру
 function loadGame(){
-    game=JSON.parse(localStorage.getItem('gameTutorial'));
+    gameTemp=JSON.parse(localStorage.getItem('gameTutorial'));
+    for (var propertyName in gameTemp) { game[propertyName] = gameTemp[propertyName]; }
      updateUI();
  }
 
