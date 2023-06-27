@@ -24,7 +24,7 @@ let game={
 }
 
  
-myTimer=setInterval(endOfTurnCalc,200);//0.2 секунды
+myTimer=setInterval(endOfTurnCalc,1000);//0.2 секунды
 let winCondition = 200;//Победа. Конец игры
 let copperMineBasePriceCoppers = 10;
 let silverMineBasePriceCoppers = 100;
@@ -33,6 +33,17 @@ let goldMineBasePriceSilvers = 100;
 let countdown = 30;
 let showExport = 0;
 
+
+//сокращаем числа
+function shortenNumber(number) {
+  var abbrev = ["", "K", "M", "B", "T","q","Q","s","S","O","N","d","U","D","TD"];//Td qd Qd sd Sd Od Nd V Uv Dv Tv ...Nv Tg Ut
+  var tier = Math.log10(Math.abs(number)) / 3 | 0;
+  if (tier == 0) return number;
+  var suffix = abbrev[tier];
+  var scale = Math.pow(10, tier * 3);
+  var scaled = number / scale;
+  return scaled.toFixed(2) + suffix;
+}
 
 //добываем монеты
    function endOfTurnCalc() {
@@ -70,7 +81,7 @@ function winGame() {
       game.golds = 0;
       game.goldsUpgLevel = 0;
       clearTimeout(myRestartTimer);
-      myTimer = setInterval(endOfTurnCalc, 200);
+      myTimer = setInterval(endOfTurnCalc, 1000);
       updateUI();
     }
 //апгрейд
@@ -79,9 +90,9 @@ function winGame() {
     }
 
     function silversUpgCost() {
-      return game.silversUpgLevel*10+5;
+      return game.silversUpgLevel*20+10;
     }function goldsUpgCost() {
-      return game.goldsUpgLevel*10+10;
+      return game.goldsUpgLevel*30+20;
     }
 
   function upgCopperMine() {
@@ -90,12 +101,14 @@ function winGame() {
         if (game.coppers>=copperMineBasePriceCoppers){
           game.coppers = game.coppers-copperMineBasePriceCoppers;
           game.coppersUpgLevel = 1;
+
           updateUI();
         }
       }else{
       if (game.coppers >= coppersUpgCost()) {
         game.coppers = game.coppers-coppersUpgCost();
         game.coppersUpgLevel = game.coppersUpgLevel + 1;
+        game.copperGrowth=game.copperGrowth+2
         updateUI();
       }
     }
@@ -169,17 +182,17 @@ function sellSilver() {
    function updateUI(){
    	    document.getElementById("winCondition").textContent = winCondition;
    	    document.getElementById("bonusScores").textContent = game.bonusScores;
-   	    document.getElementById("spnCoppersValue").textContent   = game.coppers;
+   	    document.getElementById("spnCoppersValue").textContent   = shortenNumber(game.coppers);
         if (game.coppersUpgLevel===0) {
           document.getElementById("btnUpgCopperMine").textContent  = "Построить медную шахту, ";
         document.getElementById("btnUpgCopperMine").textContent += copperMineBasePriceCoppers.toString();
         document.getElementById("btnUpgCopperMine").textContent += " медных монет";
         }else {
         document.getElementById("btnUpgCopperMine").textContent  = "Улучшить медную шахту, ";
-        document.getElementById("btnUpgCopperMine").textContent += coppersUpgCost().toString();
+        document.getElementById("btnUpgCopperMine").textContent += shortenNumber(coppersUpgCost().toString());
         document.getElementById("btnUpgCopperMine").textContent += " медных монет";
       }
-        document.getElementById("spnCoppersRate").textContent    = game.copperGrowth*game.coppersUpgLevel*game.bonusScores;
+        document.getElementById("spnCoppersRate").textContent    =shortenNumber( game.copperGrowth*game.coppersUpgLevel*game.bonusScores);
 
         document.getElementById("spnSilversValue").textContent   = game.silvers;
         if (game.silversUpgLevel===0) {
@@ -191,7 +204,7 @@ function sellSilver() {
         document.getElementById("btnUpgSilverMine").textContent += silversUpgCost().toString();
         document.getElementById("btnUpgSilverMine").textContent += " серебряных монет";
       }
-      document.getElementById("spnSilversRate").textContent    = game.silverGrowth*game.silversUpgLevel*game.bonusScores;
+      document.getElementById("spnSilversRate").textContent    = shortenNumber(game.silverGrowth*game.silversUpgLevel*game.bonusScores);
 
       document.getElementById("spnGoldsValue").textContent   = game.golds;
       if (game.goldsUpgLevel===0) {
@@ -203,7 +216,7 @@ function sellSilver() {
         document.getElementById("btnUpgGoldMine").innerHTML += goldsUpgCost().toString();
         document.getElementById("btnUpgGoldMine").innerHTML += " золотых монет";
       }
-      document.getElementById("spnGoldsRate").innerHTML    = game.goldGrowth*game.goldsUpgLevel*game.bonusScores;
+      document.getElementById("spnGoldsRate").innerHTML    = shortenNumber(game.goldGrowth*game.goldsUpgLevel*game.bonusScores);
 
 
       if (showExport===1){
@@ -217,11 +230,11 @@ function sellSilver() {
   //экспорт игры между браузерами 
 function exportGame() {
       exportTimer = setInterval(exportCountdown, 1000);
-      document.getElementById("divLblExport").innerHTML = btoa(JSON.stringify(game));
+      document.getElementById("divLblExport").textContent = btoa(JSON.stringify(game));
       showExport = 1;
       updateUI();
     }
-    
+
     function exportCountdown() {
       if (countdown > 0) {
         countdown = countdown - 1;
